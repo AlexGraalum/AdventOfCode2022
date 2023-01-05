@@ -5,6 +5,7 @@
 Rope::Rope() {
      head = new RopeEnd();
      tail = new RopeEnd();
+     //visitMap = new std::map<int[2], int>();
 }
 
 Rope::~Rope() {
@@ -13,24 +14,15 @@ Rope::~Rope() {
 }
 
 void Rope::Move(char dir, int dist) {
-     std::cout << dir << " - " << dist << std::endl;
+     //std::cout << dir << " - " << dist << std::endl;
 
      for (unsigned int d = 0; d < dist; d++) {
-          if (dir == 'U') {
-               head->MoveY(1);
-          }
-          else if (dir == 'D') {
-               head->MoveY(-1);
-          }
-          else if (dir == 'L') {
-               head->MoveX(-1);
-          }
-          else if (dir == 'R') {
-               head->MoveX(1);
-          }
+          head->MoveY(dir == 'U' ? 1 : dir == 'D' ? -1 : 0);
+          head->MoveX(dir == 'R' ? 1 : dir == 'L' ? -1 : 0);
 
           UpdateTail();
-          PrintPositions();
+          visitSet.insert(std::make_pair(tail->coord[0], tail->coord[1]));
+          //PrintPositions();
      }
 }
 
@@ -40,25 +32,27 @@ void Rope::UpdateTail() {
 
      //Diagonal
      if (tail->coord[0] != head->coord[0] && tail->coord[1] != head->coord[1]) {
-
-
-     }
-     else
+          if (std::abs(xDist) > 1) {
+               tail->MoveY(yDist / std::abs(yDist));
+               tail->MoveX(xDist / std::abs(xDist));
+          } else if (std::abs(yDist) > 1) {
+               tail->MoveX(xDist / std::abs(xDist));
+               tail->MoveY(yDist / std::abs(yDist));
+          }
+     } else {
           //Check Horizontal
           if (xDist > 1) {
                tail->MoveX(1);
-          }
-          else if (xDist < -1) {
+          } else if (xDist < -1) {
                tail->MoveX(-1);
           }
-          else
-               //Check Vertical
-               if (yDist > 1) {
-                    tail->MoveY(1);
-               }
-               else if (yDist < -1) {
-                    tail->MoveY(-1);
-               }
+          //Check Vertical
+          else if (yDist > 1) {
+               tail->MoveY(1);
+          } else if (yDist < -1) {
+               tail->MoveY(-1);
+          }
+     }
 }
 
 void Rope::PrintStart() {
@@ -76,5 +70,5 @@ void Rope::PrintPositions() {
 }
 
 void Rope::GetVisitedCount() {
-     //std::cout << "Positons visited by Tail: " << visited->size() << std::endl;
+     std::cout << "Positons visited by Tail: " << visitSet.size() << std::endl;
 }

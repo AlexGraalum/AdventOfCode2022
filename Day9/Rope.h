@@ -1,5 +1,5 @@
 #include <string>
-#include <map>
+#include <set>
 
 struct RopeEnd {
      int coord[2];
@@ -22,6 +22,7 @@ struct RopeEnd {
 class Rope {
 private:
      RopeEnd* head, * tail;
+     std::set<std::pair<int, int>> visitSet;
 
 public:
      Rope();
