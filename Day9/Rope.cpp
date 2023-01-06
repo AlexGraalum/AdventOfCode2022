@@ -2,71 +2,67 @@
 #include <iostream>
 #include <cmath>
 
-Rope::Rope() {
-     head = new RopeEnd();
-     tail = new RopeEnd();
-     //visitMap = new std::map<int[2], int>();
-}
-
-Rope::~Rope() {
-     delete head;
-     delete tail;
-}
-
-void Rope::Move(char dir, int dist) {
-     //std::cout << dir << " - " << dist << std::endl;
-
-     for (unsigned int d = 0; d < dist; d++) {
-          head->MoveY(dir == 'U' ? 1 : dir == 'D' ? -1 : 0);
-          head->MoveX(dir == 'R' ? 1 : dir == 'L' ? -1 : 0);
-
-          UpdateTail();
-          visitSet.insert(std::make_pair(tail->coord[0], tail->coord[1]));
-          //PrintPositions();
+Rope::Rope(int segmentCount) {
+     for (int i = 0; i < segmentCount; i++) {
+          segments.push_back(new RopeSegment());
+     }
+     for (int i = 0; i < segmentCount - 1; i++) {
+          segments[i]->nextSegment = segments[i + 1];
      }
 }
 
-void Rope::UpdateTail() {
-     int xDist = head->coord[0] - tail->coord[0];
-     int yDist = head->coord[1] - tail->coord[1];
+Rope::~Rope() {
+     for (auto r : segments) delete r;
+     segments.clear();
+}
 
+void Rope::Move(char dir, int dist) {
+     for (int d = 0; d < dist; d++) {
+          //Move Head
+          segments[0]->MoveX(dir == 'U' ? 1 : dir == 'D' ? -1 : 0);
+          segments[0]->MoveY(dir == 'R' ? 1 : dir == 'L' ? -1 : 0);
+
+          //Move Following Segments
+          for (unsigned int i = 1; i < segments.size(); i++) {
+               UpdateSegments(segments[i-1], segments[i]);
+          }
+
+          //Record Tail Location
+          visitSet.insert(std::make_pair(segments[segments.size() - 1]->coord[0],
+                                         segments[segments.size() - 1]->coord[1]));
+     }
+}
+
+void Rope::UpdateSegments(RopeSegment* segmentA, RopeSegment* segmentB) {
+     //Same Position
+     if (segmentA->coord == segmentB->coord) return;
+
+     //Different Positions
+     int xDist = segmentA->coord[0] - segmentB->coord[0];
+     int yDist = segmentA->coord[1] - segmentB->coord[1];
      //Diagonal
-     if (tail->coord[0] != head->coord[0] && tail->coord[1] != head->coord[1]) {
+     if (segmentB->coord[0] != segmentA->coord[0] && segmentB->coord[1] != segmentA->coord[1]) {
           if (std::abs(xDist) > 1) {
-               tail->MoveY(yDist / std::abs(yDist));
-               tail->MoveX(xDist / std::abs(xDist));
+               segmentB->MoveY(yDist / std::abs(yDist));
+               segmentB->MoveX(xDist / std::abs(xDist));
           } else if (std::abs(yDist) > 1) {
-               tail->MoveX(xDist / std::abs(xDist));
-               tail->MoveY(yDist / std::abs(yDist));
+               segmentB->MoveX(xDist / std::abs(xDist));
+               segmentB->MoveY(yDist / std::abs(yDist));
           }
      } else {
           //Check Horizontal
           if (xDist > 1) {
-               tail->MoveX(1);
+               segmentB->MoveX(1);
           } else if (xDist < -1) {
-               tail->MoveX(-1);
+               segmentB->MoveX(-1);
           }
           //Check Vertical
-          else if (yDist > 1) {
-               tail->MoveY(1);
+          if (yDist > 1) {
+               segmentB->MoveY(1);
           } else if (yDist < -1) {
-               tail->MoveY(-1);
+               segmentB->MoveY(-1);
           }
      }
-}
-
-void Rope::PrintStart() {
-     std::cout << "Start Positions\n";
-     PrintPositions();
-}
-
-void Rope::PrintEnd() {
-     std::cout << "End Positions\n";
-     PrintPositions();
-}
-
-void Rope::PrintPositions() {
-     std::cout << "Head: " << head->GetCoordString() << "\tTail: " << tail->GetCoordString() << std::endl;
 }
 
 void Rope::GetVisitedCount() {

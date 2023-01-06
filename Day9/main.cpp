@@ -8,18 +8,24 @@ int main(int argc, char** argv) {
      std::ifstream inputFile("input.txt");
      std::string s;
 
-     Rope* rope = new Rope();
+     Rope* firstRope = new Rope(2);
+     Rope* secondRope = new Rope(10);
 
-     //rope->PrintStart();
 
      while (!inputFile.eof()) {
           getline(inputFile, s);
-          rope->Move(s.c_str()[0], stoi(s.substr(2)));
+          char dir = s.c_str()[0];
+          int count = stoi(s.substr(2));
+
+          firstRope->Move(dir, count);
+          secondRope->Move(dir, count);
      }
 
-     //rope->PrintEnd();
-     rope->GetVisitedCount();
+     std::cout << "\nFirst Solution: \n";
+     firstRope->GetVisitedCount();
+     std::cout << "\nSecond Solution: \n";
+     secondRope->GetVisitedCount();
 
-     delete rope;
+     delete firstRope;
      return 0;
 }

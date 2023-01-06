@@ -1,8 +1,10 @@
 #include <string>
+#include <vector>
 #include <set>
 
-struct RopeEnd {
-     int coord[2];
+struct RopeSegment {
+     int coord[2] = { 0,0 };
+     RopeSegment* nextSegment = nullptr;
 
      std::string GetCoordString() {
           return "(" + std::to_string(coord[0]) + ", " + std::to_string(coord[1]) + ")";
@@ -21,20 +23,15 @@ struct RopeEnd {
 #define ROPE_H
 class Rope {
 private:
-     RopeEnd* head, * tail;
+     std::vector<RopeSegment*> segments;
      std::set<std::pair<int, int>> visitSet;
 
 public:
-     Rope();
+     Rope(int);
      ~Rope();
 
      void Move(char, int);
-     void UpdateTail();
-
-     void PrintStart();
-     void PrintEnd();
-     void PrintPositions();
-
+     void UpdateSegments(RopeSegment*, RopeSegment*);
      void GetVisitedCount();
 };
 #endif ROPE_H
