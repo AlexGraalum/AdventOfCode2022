@@ -5,14 +5,22 @@
 #include <vector>
 #include <stack>
 
+enum class Mode { SINGLE, MULTIPLE };
+
 class CrateSystem {
-public:
+private:
      std::vector<std::stack<char>> crates;
 
-     CrateSystem(int, std::vector<std::string>);
+     CrateSystem& operator=(const CrateSystem&);
+
+public:
+     CrateSystem() {}
+     CrateSystem(std::string);
      ~CrateSystem();
 
-     void Move(int, int, int);
+     void Run(std::string);
+     void Move(int, int, int, Mode);
+
      void PrintCrates();
      void PrintTopCrates();
 };

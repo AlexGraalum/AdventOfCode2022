@@ -1,16 +1,43 @@
 #include "CrateSystem.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <regex>
 
-CrateSystem::CrateSystem(int stackCount, std::vector<std::string> input) {
+CrateSystem::CrateSystem(std::string file) {
+     std::ifstream inputFile(file);
+     std::vector<std::string> boxStrings;
+     std::vector<int[3]> commands;
+     unsigned int stackCount = 0;
+
+     while (!inputFile.eof()) {
+          std::string s;
+          getline(inputFile, s);
+
+          if (s.substr(0, 2) == " 1") {
+               std::stringstream ss(s);
+               int tempInt;
+
+               while (!ss.eof()) {
+                    if (ss >> tempInt) {
+                         stackCount = tempInt;
+                    }
+               }
+               break;
+          }
+          else {
+               boxStrings.push_back(s);
+          }
+     }
+
      crates.resize(stackCount);
 
      unsigned int c;
-     for (int i = input.size() - 1; i >= 0; i--) {
+     for (int i = boxStrings.size() - 1; i >= 0; i--) {
           std::regex fullBox("(([\\+[A-Z])|\\s{3})+\\s*");
 
           c = 0;
-          for (std::sregex_iterator s = std::sregex_iterator(input[i].begin(), input[i].end(), fullBox);
+          for (std::sregex_iterator s = std::sregex_iterator(boxStrings[i].begin(), boxStrings[i].end(), fullBox);
                s != std::sregex_iterator();
                s++) {
                std::smatch match = *s;
@@ -21,22 +48,77 @@ CrateSystem::CrateSystem(int stackCount, std::vector<std::string> input) {
                c++;
           }
      }
+
+     this->PrintCrates();
 }
 
 CrateSystem::~CrateSystem() {
      crates.clear();
 }
 
-void CrateSystem::Move(int count, int from, int to) {
-     std::vector<char> pull;
-     for (int i = 0; i < count; i++) {
-          pull.push_back(crates[from - 1].top());
-          crates[from - 1].pop();
+CrateSystem& CrateSystem::operator=(const CrateSystem& CS) {
+     if (this == &CS) return *this;
+
+     for (auto c : CS.crates) {
+          this->crates.push_back(c);
      }
 
-     for (int i = 0; i < count; i++) {
-          crates[to - 1].push(pull.back());
-          pull.pop_back();
+     return *this;
+}
+
+void CrateSystem::Run(std::string file) {
+     CrateSystem copy = *this;
+
+     std::ifstream inputFile(file);
+     std::string s;
+     std::regex moveRule("([0-9]+)");
+     std::vector<int> moves;
+
+     moves.resize(3);
+     while (!inputFile.eof()) {
+          getline(inputFile, s);
+     
+          if (s.substr(0, 4) == "move") {
+               for (std::sregex_iterator i = std::sregex_iterator(s.begin(), s.end(), moveRule);
+                    i != std::sregex_iterator();
+                    i++) {
+                    std::smatch match = *i;
+                    moves.push_back(stoi(match.str()));
+               }
+     
+               this->Move(moves[0], moves[1], moves[2], Mode::SINGLE);
+               copy.Move(moves[0], moves[1], moves[2], Mode::MULTIPLE);
+          }
+          moves.clear();
+     }
+
+     std::cout << "FIRST SOLUTION CRATE STACK\n\n";
+     this->PrintCrates();
+     this->PrintTopCrates();
+
+     std::cout << "\nSECOND SOLUTION CRATE STACK\n\n";
+     copy.PrintCrates();
+     copy.PrintTopCrates();
+}
+
+void CrateSystem::Move(int count, int from, int to, Mode mode) {
+
+     if (mode == Mode::SINGLE) {
+          for (int i = 0; i < count; i++) {
+               crates[to - 1].push(crates[from-1].top());
+               crates[from - 1].pop();
+          }
+     } else if(mode == Mode::MULTIPLE){
+          std::vector<char> pull;
+          for (int i = 0; i < count; i++) {
+               pull.push_back(crates[from - 1].top());
+               crates[from - 1].pop();
+          }
+
+          for (int i = 0; i < count; i++) {
+               crates[to - 1].push(pull.back());
+               pull.pop_back();
+          }
      }
 }
 
