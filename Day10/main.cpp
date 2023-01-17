@@ -7,6 +7,13 @@ int main(int argc, char** argv) {
      std::ifstream inputFile("input.txt");
      std::string s;
      std::queue<std::pair<int, int>> instructions;
+     char CRT[6][40];
+
+     for (int y = 0; y < 6; y++) {
+          for (int x = 0; x < 40; x++) {
+               CRT[y][x] = '.';
+          }
+     }
 
      //Prepare Input
      while (!inputFile.eof()) {
@@ -26,7 +33,13 @@ int main(int argc, char** argv) {
      int registerX = 1;
      int signalSum = 0;
      std::vector<int> values;
-     do{
+
+     while(!instructions.empty()){
+          //Get Cycle Draw Positions
+          int crtY = cycle / 40;
+          int crtX = cycle - (crtY * 40);
+
+          //Increment Cycle (Starts at 1 not 0)
           cycle++;
 
           //Check Execution
@@ -42,11 +55,20 @@ int main(int argc, char** argv) {
           if ((cycle - 20) % 40 == 0) {
                int signal = cycle * registerX;
                signalSum += signal;
-
-               std::cout << "Cycle " << cycle << "\t-- X: " << registerX << "\t-- Signal Strength: " << signal << std::endl;
           }
-     } while (!instructions.empty());
 
-     std::cout << "Sum of signal strengths: " << signalSum << std::endl;
+          //Draw Pixel
+          if (registerX >= crtX - 1 && registerX <= crtX + 1) CRT[crtY][crtX] = '#';
+     }
+
+     std::cout << "\nSum of signal strengths: " << signalSum << "\n\n--CRT Output--\n";
+
+     for (int y = 0; y < 6; y++) {
+          for (int x = 0; x < 40; x++) {
+               std::cout << CRT[y][x];
+          }
+          std::cout << std::endl;
+     }
+
      return 0;
 }
