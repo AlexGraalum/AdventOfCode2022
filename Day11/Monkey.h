@@ -8,9 +8,12 @@ enum class OperationType {ADD, MULTIPLY, SQUARE};
 class Monkey {
 private:
      int monkeyID;
-     std::queue<int> items;
+
+     std::deque<int64_t> items;
+
      OperationType operationType;
-     int operationValue;
+     unsigned int operationValue;
+
      int test;
      int trueMonkey;
      int falseMonkey;
@@ -19,22 +22,30 @@ private:
 
 public:
      Monkey(std::vector<std::string> inputBuffer);
-     ~Monkey();
+
+     void InspectItems(std::vector<Monkey*> monkeys, unsigned int relief, int modulo);
+
+     int64_t Operate(int64_t);
+
+     int GetThrowID(uint64_t itemValue);
+
+     void PrintMonkey();
+     void PrintMonkeyItems();
 
      void SetID(int ID) { this->monkeyID = ID; }
      int GetID() { return this->monkeyID; }
      
-     void SetItems(std::queue<int> items) { this->items = items; }
-     std::queue<int> GetItems() { return this->items; }
-     void PushItem(int value) { this->items.push(value); }
-     void PopItem() { this->items.pop(); }
-     int GetFront() { return this->items.front(); }
+     void SetItems(std::deque<int64_t> items) { this->items = items; }
+     std::deque<int64_t> GetItems() { return this->items; }
+     void PushItem(int64_t value) { this->items.push_back(value); }
+     void PopItem() { this->items.pop_front(); }
+     int64_t GetFront() { return this->items.front(); }
      
      void SetOperationType(OperationType operationType) { this->operationType = operationType; }
      OperationType GetOperationType() { return this->operationType; }
 
-     void SetOperationValue(int value) { this->operationValue = value; }
-     int GetOperationValue() { return this->operationValue; }
+     void SetOperationValue(unsigned int value) { this->operationValue = value; }
+     unsigned int GetOperationValue() { return this->operationValue; }
 
      void SetTest(int test) { this->test = test; }
      int GetTest() { return this->test; }
@@ -47,8 +58,6 @@ public:
 
      void SetInspectionCount(int inspectionCount) { this->inspectionCount = inspectionCount; }
      int GetInspectionCount() { return this->inspectionCount; }
-
-     void PrintMonkey();
-     void PrintMonkeyItems();
+     void IncrementInspectionCount() { this->inspectionCount++; }
 };
 #endif

@@ -16,7 +16,7 @@ Monkey::Monkey(std::vector<std::string> inputBuffer) {
      for (std::sregex_iterator s = std::sregex_iterator(items.begin(), items.end(), re);
           s != std::sregex_iterator();
           s++) {
-          this->items.push(stoi((*s).str()));
+          this->items.push_back(stoi((*s).str()));
      }
 
      //Get Operation Type and Value
@@ -56,8 +56,45 @@ Monkey::Monkey(std::vector<std::string> inputBuffer) {
      this->inspectionCount = 0;
 }
 
-Monkey::~Monkey() {
+void Monkey::InspectItems(std::vector<Monkey*> monkeys, unsigned int relief, int modulo) {
+     //Inspect Each Item
+     while (!this->GetItems().empty()) {
+          //Get Value and Pop Item
+          int64_t itemValue = this->GetFront();
+          this->PopItem();
 
+          //Calculate Worry
+          itemValue = (int64_t)(this->Operate(itemValue)/relief);
+          if (modulo != 0) itemValue %= modulo;
+
+          //Increment Inspection Count
+          this->IncrementInspectionCount();
+
+          //Throw Item
+          monkeys[this->GetThrowID(itemValue)]->PushItem(itemValue);
+     }
+}
+
+int64_t Monkey::Operate(int64_t itemValue) {
+     switch (this->GetOperationType()) {
+     case OperationType::ADD:
+          itemValue += this->GetOperationValue();
+          break;
+     case OperationType::MULTIPLY:
+          itemValue *= this->GetOperationValue();
+          break;
+     case OperationType::SQUARE:
+          itemValue *= itemValue;
+          break;
+     }
+     return itemValue;
+}
+
+int Monkey::GetThrowID(uint64_t itemValue) {
+     if (itemValue % this->GetTest() == 0) {
+          return this->GetTrueMonkey();
+     }
+     return this->GetFalseMonkey();
 }
 
 void Monkey::PrintMonkey() {
@@ -66,11 +103,11 @@ void Monkey::PrintMonkey() {
 
      //Print Items
      std::cout << "  Items: ";
-     std::queue<int> itemsCopy = this->items;
+     std::deque<int64_t> itemsCopy = this->items;
      while (!itemsCopy.empty()) {
           std::cout << itemsCopy.front();
           if (itemsCopy.size() > 1) std::cout << ", ";
-          itemsCopy.pop();
+          itemsCopy.pop_front();
      }
      std::cout << std::endl;
      
@@ -102,11 +139,11 @@ void Monkey::PrintMonkey() {
 void Monkey::PrintMonkeyItems() {
      std::cout << "Monkey " << this->monkeyID << ": ";
 
-     std::queue<int> itemsCopy = this->items;
+     std::deque<int64_t> itemsCopy = this->items;
      while (!itemsCopy.empty()) {
           std::cout << itemsCopy.front();
           if (itemsCopy.size() > 1) std::cout << ", ";
-          itemsCopy.pop();
+          itemsCopy.pop_front();
      }
 
      std::cout << std::endl;
