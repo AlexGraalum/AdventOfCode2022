@@ -2,30 +2,35 @@
 #ifndef HILLMAP_H
 #define HILLMAP_H
 
+#include "MapPoint.h"
+#include "Graph.h"
+
 #include <string>
 #include <vector>
 
-enum class Direction {UP, DOWN, LEFT, RIGHT, NONE};
-
-struct MapPoint {
-     char c;
-     int h;
-     Direction d;
-};
 class HillMap {
 private:
-     std::vector<std::vector<MapPoint>> hillMap;
+     Graph<MapPoint>* hillMap;
 
-     int start[2] = {};
-     int end[2] = {};
+     size_t width = 0;
+     size_t height = 0;
+
+     size_t start[2] = {};
+     size_t end[2] = {};
 public:
      HillMap(std::string);
      ~HillMap();
 
+     void PrintMaps();
+
      void PrintHillMap();
+     void PrintHillHeightMap();
+     void PrintPathMap();
 
      void FindPath();
-     void PrintPathMap();
+
+     void PrintAdjMat();
+     void PrintEdges();
 };
 
 #endif

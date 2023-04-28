@@ -21,6 +21,9 @@
     <ClCompile Include="HillMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MapPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt">
@@ -29,6 +32,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HillMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

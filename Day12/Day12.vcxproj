@@ -141,12 +141,16 @@
   <ItemGroup>
     <ClCompile Include="HillMap.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MapPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graph.h" />
     <ClInclude Include="HillMap.h" />
+    <ClInclude Include="MapPoint.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
